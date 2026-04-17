@@ -6,6 +6,31 @@ The goal of this project is to make Formula 1 telemetry data accessible and unde
 
 ---
 
+## Running the Application
+
+
+### Run Locally
+
+Install dependencies:
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Run the app:
+
+```bash
+python app.py
+```
+
+
+Open in browser :
+
+http://localhost:8050
+
+
 ## Project Idea
 
 Modern Formula 1 generates large amounts of telemetry data: speed, throttle, braking, position, tyre usage, and more. While part of this data is publicly available through tools like FastF1, it is not easy to explore or interpret for most users.
@@ -98,11 +123,6 @@ The dashboard relies on a combination of data retrieval, processing, and visuali
 
 ## Running the Application
 
-### Requirements
-
-- Python 3.11+
-
----
 
 ### Run Locally
 
