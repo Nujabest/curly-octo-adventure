@@ -669,7 +669,6 @@ def sync_driver_selection(selected):
     return selected or []
 
 
-
 # Tab switch
 @app.callback(
     Output("active-tab", "data"),
