@@ -475,77 +475,6 @@ app.layout = html.Div(
         dcc.Store(id="store-selected-drivers", data=[]),
         dcc.Store(id="active-tab", data="overview"),
         html.Div(id="app-root", children=[landing_page()]),
-        # Splash
-        # Disapear after 15 seconds, circa time of loading
-        html.Div(
-            id="splash-overlay",
-            style={"display": "none"},
-            children=[
-                html.Div(
-                    style={
-                        "position": "fixed",
-                        "top": "0",
-                        "left": "0",
-                        "width": "100%",
-                        "height": "100%",
-                        "background": "rgba(8,9,13,0.92)",
-                        "display": "flex",
-                        "alignItems": "center",
-                        "justifyContent": "center",
-                        "zIndex": "9999",
-                    },
-                    children=[
-                        html.Div(
-                            style={
-                                "background": "#0d0f14",
-                                "border": "1px solid #1a1d24",
-                                "borderRadius": "12px",
-                                "padding": "40px 52px",
-                                "display": "flex",
-                                "flexDirection": "column",
-                                "alignItems": "center",
-                                "gap": "20px",
-                                "minWidth": "280px",
-                            },
-                            children=[
-                                dcc.Loading(
-                                    type="circle",
-                                    color="#e8002d",
-                                    children=html.Div(
-                                        id="splash-trigger", style={"height": "8px"}
-                                    ),
-                                ),
-                                html.Div(
-                                    "BUILDING DASHBOARD",
-                                    style={
-                                        "fontSize": "13px",
-                                        "fontWeight": "700",
-                                        "letterSpacing": "3px",
-                                        "color": "#e0e0e0",
-                                    },
-                                ),
-                                html.Div(
-                                    id="splash-status",
-                                    children="Loading session data…",
-                                    style={
-                                        "fontSize": "11px",
-                                        "color": "#555",
-                                        "letterSpacing": "1px",
-                                    },
-                                ),
-                            ],
-                        ),
-                    ],
-                ),
-            ],
-        ),
-        dcc.Interval(
-            id="splash-timer",
-            interval=7000,
-            n_intervals=0,
-            max_intervals=1,
-            disabled=True,
-        ),
     ],
 )
 
@@ -739,42 +668,6 @@ def load_session(_, year, gp):
 def sync_driver_selection(selected):
     return selected or []
 
-
-@app.callback(
-    Output("splash-trigger", "children"),
-    Input("store-race", "data"),
-    prevent_initial_call=True,
-)
-def _splash_spin(_):
-    # Loading goes spinning
-    return ""
-
-
-# If data is there, Splash after 7 seconds gone
-@app.callback(
-    Output("splash-overlay", "style"),
-    Output("splash-timer", "disabled"),
-    Output("splash-timer", "n_intervals"),
-    Output("splash-status", "children"),
-    Input("splash-timer", "n_intervals"),
-    Input("store-race", "data"),
-    prevent_initial_call=True,
-)
-def manage_splash(n_intervals, store_race):
-    triggered = ctx.triggered[0]["prop_id"] if ctx.triggered else ""
-
-    SHOW = {"display": "block"}
-    HIDE = {"display": "none"}
-
-    # If Data counter = 0
-    if "store-race" in triggered and store_race:
-        return SHOW, False, 0, "Finalising all tabs…"
-
-    # Timer disapear
-    if "splash-timer" in triggered and n_intervals and n_intervals > 0:
-        return HIDE, True, 0, ""
-
-    raise dash.exceptions.PreventUpdate
 
 
 # Tab switch
