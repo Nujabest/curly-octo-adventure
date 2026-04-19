@@ -87,7 +87,7 @@ def upload_cache_to_s3():
     if RACES_JSON.exists():
         try:
             s3.upload_file(str(RACES_JSON), S3_BUCKET, f"{S3_PREFIX}/races.json")
-            print(f"  ✓  races.json")
+            print("  ✓  races.json")
             ok += 1
         except Exception as e:
             print(f"  ✗  races.json: {e}")
