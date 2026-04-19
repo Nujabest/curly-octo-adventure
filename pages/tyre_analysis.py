@@ -376,7 +376,11 @@ def empty():
 
 # Layout + callback
 
-layout = html.Div(id="tyre-container", children=[empty()])
+layout = dcc.Loading(
+    type="circle",
+    color="#e8002d",
+    children=html.Div(id="tyre-container", children=[empty()]),
+)
 
 
 @callback(

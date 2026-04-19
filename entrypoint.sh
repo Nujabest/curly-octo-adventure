@@ -25,7 +25,11 @@ try:
     print(f"[S3] Downloading {len(keys)} files in background...")
     for key in keys:
         rel = key[len(prefix) + 1:]
-        dest = cache_dir / rel
+        # races.json goes to app root, rest goes to cache dir
+        if rel == "races.json":
+            dest = Path("/app/data/races.json")
+        else:
+            dest = cache_dir / rel
         dest.parent.mkdir(parents=True, exist_ok=True)
         urllib.request.urlretrieve(f"{endpoint}/{bucket}/{key}", dest)
     print("[S3] Cache ready.")

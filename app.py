@@ -24,6 +24,7 @@ from components.sidebar import build_sidebar
 from components.shared import (
     AVAILABLE_YEARS,
     PRELOADED_RACES,
+    RACE_DATES,
     BG2,
     GRID,
     TEXT,
@@ -640,9 +641,24 @@ def navigate(*_):
     Input("dd-year", "value"),
 )
 def update_gp_options(year):
+    from datetime import date
+
+    today = str(date.today())
     races = PRELOADED_RACES.get(int(year), [])
-    options = [{"label": r, "value": r} for r in races]
-    return options, (races[0] if races else None)
+    dates = RACE_DATES.get(int(year), {})
+    options = []
+    first_available = None
+    for r in races:
+        race_date = dates.get(r, "")
+        past = not race_date or race_date <= today
+        if past and first_available is None:
+            first_available = r
+        options.append({
+            "label": r if past else f"{r} — {race_date}",
+            "value": r,
+            "disabled": not past,
+        })
+    return options, first_available
 
 
 # Load session
@@ -670,21 +686,14 @@ def load_session(_, year, gp):
         no_change[3] = "Select year and GP."
         return no_change
 
-    # Load Race
     try:
-        race_session = get_cached_session(year, gp, "R")
-        store_race = session_to_store(race_session)
-    except Exception as e:
-        no_change[0] = None
-        no_change[3] = f"Race load error: {str(e)[:80]}"
+        store_race = session_to_store(get_cached_session(year, gp, "R"))
+    except Exception:
         store_race = None
 
-    # Load Qualifying
     try:
-        quali_session = get_cached_session(year, gp, "Q")
-        store_quali = session_to_store(quali_session)
-    except Exception as e:
-        no_change[1] = None
+        store_quali = session_to_store(get_cached_session(year, gp, "Q"))
+    except Exception:
         store_quali = None
 
     if store_race is None and store_quali is None:

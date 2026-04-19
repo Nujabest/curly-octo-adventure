@@ -428,7 +428,11 @@ def empty():
     )
 
 
-layout = html.Div(id="progression-container", children=[empty()])
+layout = dcc.Loading(
+    type="circle",
+    color="#e8002d",
+    children=html.Div(id="progression-container", children=[empty()]),
+)
 
 
 @callback(
