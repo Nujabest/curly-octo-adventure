@@ -83,8 +83,13 @@ def _require_auth(f):
 @server.route("/monitoring")
 @_require_auth
 def monitoring_page():
+    import psutil
     from components.perf_metrics import RENDER_HISTORY
     from prometheus_client import REGISTRY
+
+    proc = psutil.Process()
+    ram_mb = proc.memory_info().rss / 1024 / 1024
+    cpu_pct = proc.cpu_percent(interval=0.1)
 
     tab_labels = {
         "overview": "Overview",
@@ -96,6 +101,13 @@ def monitoring_page():
         "progression": "Race Progression",
         "pitstops": "Pit Stops",
     }
+    total_req = 0
+    for metric in REGISTRY.collect():
+        if metric.name == "f1_tab_render_seconds":
+            for s in metric.samples:
+                if s.name == "f1_tab_render_seconds_count":
+                    total_req += s.value
+
     counts, sums = {}, {}
     for metric in REGISTRY.collect():
         if metric.name != "f1_tab_render_seconds":
@@ -158,8 +170,12 @@ def monitoring_page():
   <div class="cards">
     <div class="card"><div class="label">LAST RENDER</div>
       <div class="value">{last_render}</div></div>
-    <div class="card"><div class="label">TABS TRACKED</div>
-      <div class="value">{len(rows)}</div></div>
+    <div class="card"><div class="label">TOTAL RENDERS</div>
+      <div class="value">{int(total_req)}</div></div>
+    <div class="card"><div class="label">RAM USAGE</div>
+      <div class="value" style="color:{'#e8002d' if ram_mb > 3000 else '#fff'}">{ram_mb:.0f} MB</div></div>
+    <div class="card"><div class="label">CPU</div>
+      <div class="value" style="color:{'#e8002d' if cpu_pct > 80 else '#fff'}">{cpu_pct:.1f}%</div></div>
   </div>
   <table>
     <thead><tr><th>TAB</th><th>CALLS</th><th>AVG RENDER</th></tr></thead>
