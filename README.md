@@ -111,23 +111,30 @@ A hidden page at `/monitoring` (HTTP Basic Auth) shows tab render times, RAM, an
 ```
 f1-dashboard/
 │
-├── app.py                  # Main Dash application + callbacks
-├── entrypoint.sh           # Pod startup: S3 download + gunicorn
-├── Dockerfile
-├── requirements.txt
+├── app.py                  # Main Dash app: app/server setup, Flask routes, cache, callbacks
+├── entrypoint.sh           # Container startup: optional cache warmup + gunicorn
+├── Dockerfile              # Container image definition
+├── requirements.txt        # Python dependencies
 │
 ├── data/
-│   └── races.json          # Race calendar with dates (2024–2026)
+│   └── races.json          # Race calendar with dates
 │
 ├── scripts/
-│   └── sync_races.py       # Manual sync: download F1 data + upload S3
+│   └── sync_races.py       # Manual sync/update helper for race data / cache
 │
-├── assets/                 # Static files (CSS, logos)
+├── assets/                 # Static files (CSS, logos, images)
+│
+├── views/                  # High-level UI builders extracted from app.py
+│   ├── __init__.py
+│   ├── landing.py          # Landing page view
+│   ├── championship.py     # Championship page wrapper
+│   ├── telemetry.py        # Telemetry dashboard shell + tab definitions
+│   └── root_layout.py      # Global app layout and dcc.Store setup
 │
 ├── components/
-│   ├── shared.py           # Shared constants, data loading, formatting
-│   ├── sidebar.py          # Session selector + driver checklist
-│   ├── perf_metrics.py     # Tab render timing (Prometheus + monitoring)
+│   ├── shared.py           # Shared constants, formatting, session helpers
+│   ├── sidebar.py          # Session selector + driver checklist UI
+│   ├── perf_metrics.py     # Tab render timing / monitoring helpers
 │   ├── results_loader.py   # Race/quali results from Jolpica API
 │   └── charts/             # Visualization modules
 │       ├── lap_time.py
@@ -137,7 +144,7 @@ f1-dashboard/
 │       ├── telemetry.py
 │       └── pit_stops.py
 │
-├── pages/                  # One file per dashboard tab
+├── pages/                  # One file per analysis page/tab
 │   ├── overview.py
 │   ├── qualifying.py
 │   ├── race_replay.py
@@ -148,7 +155,7 @@ f1-dashboard/
 │   ├── pit_stops.py
 │   └── championship.py
 │
-└── k8s/                    # Kubernetes manifests (ArgoCD)
+└── k8s/                    # Kubernetes manifests (optional / future GitOps deployment)
     ├── deployment.yaml
     ├── service.yaml
     └── ingress.yaml
