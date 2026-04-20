@@ -76,12 +76,48 @@ This dashboard was built to bridge that gap. It provides an interactive environm
 
 ## Running Locally
 
+
+
+Clone the repository and start the dashboard locally.
+
+### 1. Clone the project
+
+```bash
+git clone https://github.com/apidburachynskyi/F1_telemetrydashboard.git
+cd F1_telemetrydashboard
+```
+
+### 2. Create a virtual environment
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
+
+### 3. Install dependencies
+
 ```bash
 pip install -r requirements.txt
+```
+
+### 4. Run the app
+
+```bash
 python app.py
 ```
-Then open [http://localhost:8050](http://localhost:8050).
 
+### 5. Open the dashboard
+
+Visit `http://localhost:8050`
+
+---
+
+
+## Notes
+
+- The app uses a local cache directory at `./cache/`
+- The first session load may take longer if data is not cached yet
+- Some features depend on available FastF1 session data
 ---
 ## Architecture
 
