@@ -38,7 +38,7 @@ except Exception as e:
 EOF
 
 exec gunicorn app:server \
-    --workers 4 \
+    --workers 9 \
     --timeout 300 \
     --bind "0.0.0.0:${PORT:-8050}" \
     --access-logfile - \
