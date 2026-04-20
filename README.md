@@ -8,7 +8,7 @@
 ![ArgoCD](https://img.shields.io/badge/ArgoCD-deployed-orange)
 
 - **Primary deployment (SSP Cloud):** [https://f1-dashboard.user.lab.sspcloud.fr/](https://f1-dashboard.user.lab.sspcloud.fr/)
-- **Alternative deployment (Railway):** [https://your-railway-url.up.railway.app](https://www.f1telemetry.live/)
+- **Alternative deployment (Railway):** [https://www.f1telemetry.live/](https://www.f1telemetry.live/)
 
 An interactive Formula 1 analytics dashboard built with **Dash**, **FastF1**, and **Plotly**, deployed on **SSP Cloud** via **ArgoCD**.
 
