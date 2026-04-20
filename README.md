@@ -133,7 +133,8 @@ It displays:
 
 **Monitoring URL:** [https://f1-dashboard.user.lab.sspcloud.fr/monitoring](https://f1-dashboard.user.lab.sspcloud.fr/monitoring)
 
-If this repository is public, avoid publishing real credentials directly in the README.
+- Login: `admin`
+- Password: `f1admin2026`
 
 ---
 
