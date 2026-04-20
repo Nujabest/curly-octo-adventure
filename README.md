@@ -1,3 +1,5 @@
+**Live site:** https://f1-dashboard.user.lab.sspcloud.fr/
+
 # F1 Telemetry Dashboard
 
 An interactive Formula 1 analytics dashboard built with Dash, FastF1, and Plotly, deployed on SSP Cloud via ArgoCD.
