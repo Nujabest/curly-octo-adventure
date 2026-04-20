@@ -99,6 +99,9 @@ session_to_store() → dcc.Store → Dash callbacks → Charts
 
 A hidden page at `/monitoring` (HTTP Basic Auth) shows tab render times, RAM, and CPU usage.
 
+- URL: `https://f1-dashboard.user.lab.sspcloud.fr/monitoring`
+- Login: `admin` / `f1admin2026`
+
 ---
 
 ## Project Structure
