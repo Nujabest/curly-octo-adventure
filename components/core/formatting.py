@@ -13,7 +13,9 @@ def format_gap(value, is_leader=False):
     try:
         if pd.isna(value):
             return "–"
-        seconds = value.total_seconds() if hasattr(value, "total_seconds") else float(value)
+        seconds = (
+            value.total_seconds() if hasattr(value, "total_seconds") else float(value)
+        )
         if math.isnan(seconds) or seconds < 0:
             return "–"
         return f"+{seconds:.3f}s"
@@ -25,7 +27,9 @@ def format_laptime(value):
     try:
         if pd.isna(value):
             return "–"
-        seconds = value.total_seconds() if hasattr(value, "total_seconds") else float(value)
+        seconds = (
+            value.total_seconds() if hasattr(value, "total_seconds") else float(value)
+        )
         if math.isnan(seconds) or seconds <= 0:
             return "–"
         minutes = int(seconds // 60)

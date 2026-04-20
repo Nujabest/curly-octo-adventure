@@ -2,7 +2,16 @@ import numpy as np
 import plotly.graph_objects as go
 from dash import html, dcc, Input, Output, callback
 from components.perf_metrics import tab_timer
-from components.core.constants import TYRE_COLORS, BG2, BG3, GRID, TEXT, MUTED, ACCENT, FONT
+from components.core.constants import (
+    TYRE_COLORS,
+    BG2,
+    BG3,
+    GRID,
+    TEXT,
+    MUTED,
+    ACCENT,
+    FONT,
+)
 from components.core.theme import team_logo_img
 from components.ui.primitives import section_title
 

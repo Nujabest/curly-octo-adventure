@@ -71,7 +71,11 @@ def session_to_store(session):
         "name": safe_str(event.get("EventName", "")),
         "country": safe_str(event.get("Country", "")),
         "circuit": safe_str(event.get("Location", "")),
-        "year": int(event["EventDate"].year) if hasattr(event.get("EventDate", ""), "year") else 0,
+        "year": (
+            int(event["EventDate"].year)
+            if hasattr(event.get("EventDate", ""), "year")
+            else 0
+        ),
     }
 
     try:
@@ -181,14 +185,26 @@ def session_to_store(session):
         laps["TyreLife"] = laps["TyreLife"].fillna(0).astype(int)
         laps["Stint"] = laps["Stint"].fillna(0).astype(int)
 
-        time_cols = ["Sector1Time", "Sector2Time", "Sector3Time", "PitInTime", "PitOutTime"]
+        time_cols = [
+            "Sector1Time",
+            "Sector2Time",
+            "Sector3Time",
+            "PitInTime",
+            "PitOutTime",
+        ]
         for col in time_cols:
             if col in laps.columns:
                 laps[col + "Sec"] = laps[col].apply(timedelta_to_seconds)
 
         keep = [
-            "Driver", "Team", "LapNumber", "LapTimeSec", "Compound",
-            "TyreLife", "Stint", "Position"
+            "Driver",
+            "Team",
+            "LapNumber",
+            "LapTimeSec",
+            "Compound",
+            "TyreLife",
+            "Stint",
+            "Position",
         ] + [c + "Sec" for c in time_cols if c in laps.columns]
         keep = [c for c in keep if c in laps.columns]
 
