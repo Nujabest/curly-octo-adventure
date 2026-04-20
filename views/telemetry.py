@@ -11,6 +11,8 @@ import pages.pit_stops as pg_pitstops
 from components.sidebar import build_sidebar
 from components.shared import GRID, TEXT, ACCENT, FONT
 
+from components.ui.hidden_ids import hidden_callback_placeholders
+
 TABS = [
     ("overview", "OVERVIEW", pg_overview.layout),
     ("qualifying", "QUALIFYING", pg_qualifying.layout),
@@ -43,18 +45,7 @@ def telemetry_view():
         style={"background": "#08090d", "minHeight": "100vh", "fontFamily": FONT},
         children=[
             # Hidden nav buttons + dummy checklist — ensure all IDs exist at startup
-            html.Button(id="btn-go-telemetry", n_clicks=0, style={"display": "none"}),
-            html.Button(
-                id="btn-go-championship", n_clicks=0, style={"display": "none"}
-            ),
-            html.Button(
-                id="btn-back-from-champ", n_clicks=0, style={"display": "none"}
-            ),
-            html.Button(id="btn-back-from-dash", n_clicks=0, style={"display": "none"}),
-            html.Button(id="quali-seg-Q1", n_clicks=0, style={"display": "none"}),
-            html.Button(id="quali-seg-Q2", n_clicks=0, style={"display": "none"}),
-            html.Button(id="quali-seg-Q3", n_clicks=0, style={"display": "none"}),
-            html.Div(id="quali-timeline-chart", style={"display": "none"}),
+            *hidden_callback_placeholders(),
             html.Div(
                 style={
                     "height": "3px",

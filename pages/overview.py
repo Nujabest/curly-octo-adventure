@@ -13,41 +13,9 @@ from components.shared import (
     FONT,
     team_logo_img,
 )
+from components.ui.primitives import section_title
 
 # helpers
-
-
-def _section(text, icon=""):
-    return html.Div(
-        style={
-            "display": "flex",
-            "alignItems": "center",
-            "gap": "8px",
-            "marginBottom": "16px",
-            "paddingBottom": "10px",
-            "borderBottom": f"1px solid {GRID}",
-        },
-        children=[
-            html.Div(
-                style={
-                    "width": "3px",
-                    "height": "20px",
-                    "background": ACCENT,
-                    "borderRadius": "2px",
-                    "flexShrink": "0",
-                }
-            ),
-            html.Div(
-                text,
-                style={
-                    "fontSize": "11px",
-                    "fontWeight": "700",
-                    "letterSpacing": "2.5px",
-                    "color": TEXT,
-                },
-            ),
-        ],
-    )
 
 
 def _info_card(icon, label, val):
@@ -318,7 +286,7 @@ def render(store, selected_drivers):
         className="f1-card",
         style={"marginBottom": "0"},
         children=[
-            _section("RACE RESULTS"),
+            section_title("RACE RESULTS"),
             html.Div(
                 style={"overflowX": "auto"},
                 children=[
@@ -391,7 +359,7 @@ def render(store, selected_drivers):
     stats_panel = html.Div(
         className="f1-card",
         children=[
-            _section("RACE STATISTICS"),
+            section_title("RACE STATISTICS"),
             html.Div(
                 style={
                     "display": "grid",

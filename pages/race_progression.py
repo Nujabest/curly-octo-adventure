@@ -16,39 +16,7 @@ from components.shared import (
     format_laptime,
 )
 from components.charts import position_flow
-
-
-def _section(title):
-    return html.Div(
-        style={
-            "display": "flex",
-            "alignItems": "center",
-            "gap": "8px",
-            "marginBottom": "16px",
-            "paddingBottom": "10px",
-            "borderBottom": f"1px solid {GRID}",
-        },
-        children=[
-            html.Div(
-                style={
-                    "width": "3px",
-                    "height": "18px",
-                    "background": ACCENT,
-                    "borderRadius": "2px",
-                    "flexShrink": "0",
-                }
-            ),
-            html.Div(
-                title,
-                style={
-                    "fontSize": "11px",
-                    "fontWeight": "700",
-                    "letterSpacing": "2.5px",
-                    "color": TEXT,
-                },
-            ),
-        ],
-    )
+from components.ui.primitives import section_title
 
 
 def _chart_card(title, fig):
@@ -62,7 +30,7 @@ def _chart_card(title, fig):
             "boxShadow": "0 2px 12px rgba(0,0,0,0.3)",
         },
         children=[
-            _section(title),
+            section_title(title),
             dcc.Graph(figure=fig, config={"displayModeBar": True}),
         ],
     )
@@ -477,7 +445,7 @@ def render(store, selected_drivers):
                             "alignItems": "center",
                         },
                         children=[
-                            _section("LAP-BY-LAP PROGRESSION"),
+                            section_title("LAP-BY-LAP PROGRESSION"),
                             html.Span(
                                 f"{total_laps} LAPS",
                                 style={

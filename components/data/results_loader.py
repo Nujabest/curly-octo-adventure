@@ -1,50 +1,7 @@
-import requests
 import pandas as pd
 import math
 from components.shared import format_laptime, safe_str
-
-JOLPICA = "https://api.jolpi.ca/ergast/f1"
-
-
-def _get(url, timeout=8):
-    """GET request to JolpicaReturns None on failure."""
-    try:
-        r = requests.get(url, timeout=timeout)
-        if r.status_code == 200:
-            return r.json()
-        return None
-    except Exception as e:
-        print(f"[Jolpica] {url} → {e}")
-        return None
-
-
-def get_round_number(year, gp_name):
-    """Find the round number for a GP name in a given yea"""
-    data = _get(f"{JOLPICA}/{year}.json")
-    if not data:
-        return None
-    try:
-        races = data["MRData"]["RaceTable"]["Races"]
-        gp_lower = gp_name.lower()
-        for race in races:
-            if (
-                gp_lower in race["raceName"].lower()
-                or gp_lower
-                in race["Circuit"].get("Location", {}).get("country", "").lower()
-                or gp_lower in race["Circuit"].get("circuitName", "").lower()
-            ):
-                return int(race["round"])
-        # Try partial match on circuit location
-        for race in races:
-            loc = race["Circuit"].get("Location", {})
-            if (
-                gp_lower in loc.get("locality", "").lower()
-                or gp_lower in loc.get("country", "").lower()
-            ):
-                return int(race["round"])
-    except Exception:
-        pass
-    return None
+from components.data.jolpica import JOLPICA, jolpica_get, get_round_number
 
 
 def fetch_race_results(year, gp_name):
@@ -58,7 +15,7 @@ def fetch_race_results(year, gp_name):
     if not round_num:
         return None
 
-    data = _get(f"{JOLPICA}/{year}/{round_num}/results.json")
+    data = jolpica_get(f"{JOLPICA}/{year}/{round_num}/results.json")
     if not data:
         return None
 
@@ -114,7 +71,7 @@ def fetch_quali_results(year, gp_name):
     if not round_num:
         return None
 
-    data = _get(f"{JOLPICA}/{year}/{round_num}/qualifying.json")
+    data = jolpica_get(f"{JOLPICA}/{year}/{round_num}/qualifying.json")
     if not data:
         return None
 

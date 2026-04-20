@@ -1,11 +1,6 @@
-"""
-components/charts/lap_time.py
-Lap time vs lap number, colored by tyre compound.
-Improved: thicker lines, bigger markers, driver labels, better axes.
-"""
-
 import plotly.graph_objects as go
-from components.shared import TYRE_COLORS, GRID, FONT, hex_to_rgba
+from components.shared import TYRE_COLORS, FONT
+from components.ui.plot_theme import base_layout, axis_style
 
 
 def build(laps: list, drivers: list, drv_colors: dict) -> go.Figure:
@@ -59,43 +54,10 @@ def build(laps: list, drivers: list, drv_colors: dict) -> go.Figure:
 
     _PLOT_BG = "#0a0c11"
     fig.update_layout(
-        paper_bgcolor="#0d0f14",
-        plot_bgcolor=_PLOT_BG,
-        font=dict(color="#888", family=FONT, size=10),
-        height=420,
-        margin=dict(l=58, r=80, t=28, b=52),
+        **base_layout(height=420, margin={"l": 58, "r": 80, "t": 28, "b": 52}),
         hovermode="x unified",
-        hoverlabel=dict(
-            bgcolor="#13161e",
-            bordercolor="#252830",
-            font=dict(color="#e0e0e0", size=11),
-        ),
-        legend=dict(
-            bgcolor="rgba(13,15,20,0.92)",
-            bordercolor="#1a1d24",
-            borderwidth=1,
-            font=dict(size=11, color="#ccc"),
-            orientation="h",
-            x=0,
-            y=1.06,
-            itemsizing="constant",
-        ),
-        xaxis=dict(
-            gridcolor="#161920",
-            zeroline=False,
-            tickfont=dict(size=10, color="#777"),
-            title=dict(text="Lap", font=dict(size=10, color="#666")),
-            showline=True,
-            linecolor="#1a1d24",
-        ),
-        yaxis=dict(
-            gridcolor="#161920",
-            zeroline=False,
-            tickfont=dict(size=10, color="#777"),
-            title=dict(text="Lap time (s)", font=dict(size=10, color="#666")),
-            showline=True,
-            linecolor="#1a1d24",
-        ),
+        xaxis=axis_style("Lap"),
+        yaxis=axis_style("Lap time (s)"),
     )
     return fig
 

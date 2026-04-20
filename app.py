@@ -19,9 +19,21 @@ from components.shared import (
     GRID,
     TEXT,
     ACCENT,
-    session_to_store,
 )
 import components.shared as _shared
+
+from components.data.session_loader import (
+    load_store_pair,
+    build_driver_checklist,
+    build_load_status,
+)
+
+from components.monitoring import (
+    configure_monitoring,
+    require_monitoring_auth,
+    render_monitoring_page,
+)
+
 
 # FastF1 cache
 CACHE_DIR = os.environ.get("FF1_CACHE_DIR", "./cache")
@@ -48,132 +60,13 @@ def health():
 _MONITORING_USER = os.environ.get("MONITORING_USER", "admin")
 _MONITORING_PASSWORD = os.environ.get("MONITORING_PASSWORD", "f1admin2026")
 
-
-def _require_auth(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        auth = request.authorization
-        if (
-            not auth
-            or auth.username != _MONITORING_USER
-            or auth.password != _MONITORING_PASSWORD
-        ):
-            return Response(
-                "Access denied",
-                401,
-                {"WWW-Authenticate": 'Basic realm="F1 Monitoring"'},
-            )
-        return f(*args, **kwargs)
-
-    return decorated
+configure_monitoring(_MONITORING_USER, _MONITORING_PASSWORD)
 
 
 @server.route("/monitoring")
-@_require_auth
+@require_monitoring_auth
 def monitoring_page():
-    import psutil
-    from components.perf_metrics import RENDER_HISTORY
-    from prometheus_client import REGISTRY
-
-    proc = psutil.Process()
-    ram_mb = proc.memory_info().rss / 1024 / 1024
-    cpu_pct = proc.cpu_percent(interval=0.1)
-
-    tab_labels = {
-        "overview": "Overview",
-        "qualifying": "Qualifying",
-        "replay": "Race Replay",
-        "corner": "Corner Analysis",
-        "tyre": "Tyre Analysis",
-        "lap": "Lap Analysis",
-        "progression": "Race Progression",
-        "pitstops": "Pit Stops",
-    }
-    total_req = 0
-    for metric in REGISTRY.collect():
-        if metric.name == "f1_tab_render_seconds":
-            for s in metric.samples:
-                if s.name == "f1_tab_render_seconds_count":
-                    total_req += s.value
-
-    counts, sums = {}, {}
-    for metric in REGISTRY.collect():
-        if metric.name != "f1_tab_render_seconds":
-            continue
-        for s in metric.samples:
-            tab = s.labels.get("tab", "?")
-            if s.name == "f1_tab_render_seconds_count":
-                counts[tab] = s.value
-            elif s.name == "f1_tab_render_seconds_sum":
-                sums[tab] = s.value
-    rows = sorted(
-        [
-            {
-                "tab": tab_labels.get(t, t),
-                "calls": int(counts[t]),
-                "avg": round(sums.get(t, 0) / counts[t], 2) if counts[t] else 0,
-            }
-            for t in counts
-        ],
-        key=lambda r: r["avg"],
-        reverse=True,
-    )
-    last_render = f"{RENDER_HISTORY[-1]['duration']:.2f}s" if RENDER_HISTORY else "—"
-
-    def color(avg):
-        if avg > 5:
-            return "#e8002d"
-        if avg > 1:
-            return "#00d2be"
-        return "#39b54a"
-
-    rows_html = "".join(
-        f"<tr><td>{r['tab']}</td><td>{r['calls']}</td>"
-        f"<td style='color:{color(r['avg'])};font-weight:700'>{r['avg']:.2f}s</td></tr>"
-        for r in rows
-    )
-    html_page = f"""<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>F1 Dashboard — Monitoring</title>
-  <meta http-equiv="refresh" content="15">
-  <style>
-    body{{background:#08090d;color:#ccc;font-family:sans-serif;padding:32px;}}
-    h1{{font-size:18px;letter-spacing:3px;color:#fff;margin-bottom:24px;}}
-    .cards{{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:28px;}}
-    .card{{background:#0d0f14;border:1px solid #1e2229;border-radius:8px;padding:16px 22px;min-width:140px;}}
-    .label{{font-size:10px;color:#555;letter-spacing:1.5px;font-weight:700;margin-bottom:6px;}}
-    .value{{font-size:26px;font-weight:700;color:#fff;}}
-    table{{width:100%;border-collapse:collapse;background:#0d0f14;border:1px solid #1e2229;border-radius:8px;}}
-    th{{font-size:10px;color:#555;letter-spacing:1px;padding:10px 16px;text-align:left;border-bottom:1px solid #1e2229;}}
-    td{{padding:10px 16px;font-size:13px;border-bottom:1px solid #12141a;}}
-    tr:last-child td{{border-bottom:none;}}
-    .legend{{font-size:11px;color:#555;margin-top:10px;}}
-    .note{{font-size:10px;color:#333;margin-top:24px;}}
-  </style>
-</head>
-<body>
-  <h1>F1 DASHBOARD — MONITORING</h1>
-  <div class="cards">
-    <div class="card"><div class="label">LAST RENDER</div>
-      <div class="value">{last_render}</div></div>
-    <div class="card"><div class="label">TOTAL RENDERS</div>
-      <div class="value">{int(total_req)}</div></div>
-    <div class="card"><div class="label">RAM USAGE</div>
-      <div class="value" style="color:{'#e8002d' if ram_mb > 3000 else '#fff'}">{ram_mb:.0f} MB</div></div>
-    <div class="card"><div class="label">CPU</div>
-      <div class="value" style="color:{'#e8002d' if cpu_pct > 80 else '#fff'}">{cpu_pct:.1f}%</div></div>
-  </div>
-  <table>
-    <thead><tr><th>TAB</th><th>CALLS</th><th>AVG RENDER</th></tr></thead>
-    <tbody>{rows_html}</tbody>
-  </table>
-  <div class="legend">&#x1F7E2; &lt;1s &nbsp; &#x1F535; 1–5s &nbsp; &#x1F534; &gt;5s</div>
-  <div class="note">Auto-refresh every 15s</div>
-</body>
-</html>"""
-    return html_page, 200, {"Content-Type": "text/html"}
+    return render_monitoring_page(), 200, {"Content-Type": "text/html"}
 
 
 # Server-side session cache
@@ -254,6 +147,15 @@ def update_gp_options(year):
     return options, first_available
 
 
+def build_tab_state(active_tab="overview"):
+    page_styles = [
+        {"display": "block"} if tid == active_tab else {"display": "none"}
+        for tid, _, _ in TABS
+    ]
+    btn_styles = [_tab_style(tid == active_tab) for tid, _, _ in TABS]
+    return active_tab, page_styles, btn_styles
+
+
 # Load session
 @app.callback(
     Output("store-race", "data"),
@@ -278,104 +180,22 @@ def load_session(_, year, gp):
     if not all([year, gp]):
         no_change[3] = "Select year and GP."
         return no_change
-
-    try:
-        store_race = session_to_store(get_cached_session(year, gp, "R"))
-    except Exception:
-        store_race = None
-
-    try:
-        store_quali = session_to_store(get_cached_session(year, gp, "Q"))
-    except Exception:
-        store_quali = None
+    store_race, store_quali = load_store_pair(year, gp)
 
     if store_race is None and store_quali is None:
         no_change[3] = "Could not load Race or Qualifying for this event."
         return no_change
 
-    # Use race store for driver list; fall back to quali
     primary = store_race or store_quali
-
     drivers_data = primary.get("drivers", [])
-    default_sel = [drivers_data[0]["drv"]] if drivers_data else []
 
-    checklist_options = []
-    for d in drivers_data:
-        drv = d["drv"]
-        color = d["color"]
-        pos = str(d["pos"]) if d["pos"] < 99 else "–"
-        checklist_options.append(
-            {
-                "label": html.Div(
-                    style={
-                        "display": "flex",
-                        "alignItems": "center",
-                        "gap": "8px",
-                        "padding": "4px 0",
-                    },
-                    children=[
-                        html.Span(
-                            pos,
-                            style={
-                                "fontSize": "10px",
-                                "color": "#555",
-                                "minWidth": "16px",
-                                "fontWeight": "700",
-                            },
-                        ),
-                        html.Div(
-                            style={
-                                "width": "3px",
-                                "height": "18px",
-                                "background": color,
-                                "borderRadius": "2px",
-                            }
-                        ),
-                        html.Span(
-                            drv,
-                            style={
-                                "fontSize": "12px",
-                                "fontWeight": "600",
-                                "color": color,
-                            },
-                        ),
-                    ],
-                ),
-                "value": drv,
-            }
-        )
+    checklist, default_sel = build_driver_checklist(drivers_data)
 
-    checklist = dcc.Checklist(
-        id="driver-checklist",
-        options=checklist_options,
-        value=default_sel,
-        style={"maxHeight": "420px", "overflowY": "auto"},
-        inputStyle={"marginRight": "8px", "accentColor": ACCENT},
-        labelStyle={
-            "display": "flex",
-            "alignItems": "center",
-            "cursor": "pointer",
-            "marginBottom": "4px",
-            "padding": "4px 6px",
-            "borderRadius": "4px",
-            "background": "#12151c",
-            "border": f"1px solid {GRID}",
-        },
-    )
-
-    key = f"{year}|{gp}|R"  # session-key always points to Race for telemetry pages
-    quali_ok = "✓ Q" if store_quali else "✗ Q"
-    race_ok = "✓ R" if store_race else "✗ R"
-    status = f"{gp} {year}  {race_ok}  {quali_ok}"
+    key = f"{year}|{gp}|R"
+    status = build_load_status(gp, year, store_race, store_quali)
     count = f"{len(default_sel)}/{len(drivers_data)}"
 
-    # Always open to Overview (race-based)
-    active_tab = "overview"
-    page_styles = [
-        {"display": "block"} if tid == active_tab else {"display": "none"}
-        for tid, _, _ in TABS
-    ]
-    btn_styles = [_tab_style(tid == active_tab) for tid, _, _ in TABS]
+    active_tab, page_styles, btn_styles = build_tab_state("overview")
 
     return (
         [

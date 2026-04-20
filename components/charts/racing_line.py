@@ -1,26 +1,3 @@
-"""
-components/charts/racing_line.py
-==================================
-Animated 2D racing line chart for a single corner.
-
-Shows:
-- A 3-layer dark track background
-- One racing line per driver (team color or speed heatmap)
-- Animated car dots that travel through the corner at REAL speed
-  (dots linger where the car brakes, fly through fast sections)
-- Apex marker (white X)
-
-Animation is time-correct: dots are resampled uniformly in TIME,
-not in space. Computed from distance + speed → cumulative time axis,
-then uniformly sampled so the dot velocity reflects actual car speed.
-
-Input:  active_tels - dict mapping driver → {"slc": DataFrame, "color": str,
-                                               "lap_info": dict}
-        mode        - "team" (solid team color) or "speed" (heatmap)
-
-Output: plotly Figure with animation frames
-"""
-
 import plotly.graph_objects as go
 import numpy as np
 from scipy.interpolate import CubicSpline

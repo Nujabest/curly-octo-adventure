@@ -1,9 +1,9 @@
-import requests
 import pandas as pd
 import plotly.graph_objects as go
 from dash import html, dcc, Input, Output, callback
 from components.perf_metrics import tab_timer
 from components.shared import BG2, BG3, GRID, TEXT, MUTED, ACCENT, FONT
+from components.data.jolpica import JOLPICA, jolpica_get, get_round_number
 from components.charts.pit_stops import (
     prepare_pit_data,
     build_team_colors,
@@ -13,39 +13,6 @@ from components.charts.pit_stops import (
     team_stats_table,
 )
 
-JOLPICA = "https://api.jolpi.ca/ergast/f1"
-
-
-def _jolpica_get(url, timeout=8):
-    try:
-        r = requests.get(url, timeout=timeout)
-        if r.status_code == 200:
-            return r.json()
-    except Exception as e:
-        print(f"[Jolpica pitstops] {url} => {e}")
-    return None
-
-
-def _get_round(year, gp_name):
-    """find round number for a GP"""
-    data = _jolpica_get(f"{JOLPICA}/{year}.json")
-    if not data:
-        return None
-    try:
-        races = data["MRData"]["RaceTable"]["Races"]
-        gp_lower = gp_name.lower()
-        for race in races:
-            if (
-                gp_lower in race["raceName"].lower()
-                or gp_lower in race["Circuit"].get("circuitName", "").lower()
-                or gp_lower
-                in race["Circuit"].get("Location", {}).get("country", "").lower()
-            ):
-                return int(race["round"])
-    except Exception:
-        pass
-    return None
-
 
 def fetch_jolpica_pitstops(year, gp_name, store):
     """
@@ -53,11 +20,11 @@ def fetch_jolpica_pitstops(year, gp_name, store):
     Fetch pit stop data from Jolpica API and return a DataFrame
     with the same shape as prepare_pit_data(): Driver, Team, TeamColor, Lap, Duration, StopNumber
     """
-    round_num = _get_round(year, gp_name)
+    round_num = get_round_number(year, gp_name)
     if not round_num:
         return pd.DataFrame()
 
-    data = _jolpica_get(f"{JOLPICA}/{year}/{round_num}/pitstops.json?limit=100")
+    data = jolpica_get(f"{JOLPICA}/{year}/{round_num}/pitstops.json?limit=100")
     if not data:
         return pd.DataFrame()
 

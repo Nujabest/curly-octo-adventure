@@ -1,5 +1,6 @@
 import plotly.graph_objects as go
-from components.shared import GRID, FONT
+from components.shared import FONT
+from components.ui.plot_theme import base_layout, axis_style
 
 
 def build(laps: list, drivers: list, drv_colors: dict) -> go.Figure:
@@ -37,45 +38,10 @@ def build(laps: list, drivers: list, drv_colors: dict) -> go.Figure:
             xshift=9,
         )
 
-    fig.update_layout(
-        paper_bgcolor="#0d0f14",
-        plot_bgcolor="#0a0c11",
-        font=dict(color="#888", family=FONT, size=10),
-        height=420,
-        margin=dict(l=52, r=80, t=24, b=52),
-        hovermode="x unified",
-        hoverlabel=dict(
-            bgcolor="#13161e",
-            bordercolor="#252830",
-            font=dict(color="#e0e0e0", size=11),
+        fig.update_layout(
+            **base_layout(height=420, margin={"l": 52, "r": 80, "t": 24, "b": 52}),
+            hovermode="x unified",
+            xaxis=axis_style("Lap"),
+            yaxis=axis_style("Position", reversed_axis=True, dtick=1),
         ),
-        legend=dict(
-            bgcolor="rgba(13,15,20,0.92)",
-            bordercolor="#1a1d24",
-            borderwidth=1,
-            font=dict(size=11, color="#ccc"),
-            orientation="h",
-            x=0,
-            y=1.06,
-            itemsizing="constant",
-        ),
-        xaxis=dict(
-            gridcolor="#161920",
-            zeroline=False,
-            tickfont=dict(size=10, color="#777"),
-            title=dict(text="Lap", font=dict(size=10, color="#666")),
-            showline=True,
-            linecolor="#1a1d24",
-        ),
-        yaxis=dict(
-            gridcolor="#161920",
-            zeroline=False,
-            autorange="reversed",
-            dtick=1,
-            tickfont=dict(size=10, color="#777"),
-            title=dict(text="Position", font=dict(size=10, color="#666")),
-            showline=True,
-            linecolor="#1a1d24",
-        ),
-    )
     return fig

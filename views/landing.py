@@ -1,5 +1,6 @@
 from dash import html, dcc
 from components.shared import BG2, GRID, TEXT, ACCENT, FONT
+from components.ui.hidden_ids import hidden_callback_placeholders
 
 
 def landing_page():
@@ -39,16 +40,8 @@ def landing_page():
                 }
             ),
             # Hidden dummies
-            html.Button(
-                id="btn-back-from-champ", n_clicks=0, style={"display": "none"}
-            ),
-            html.Button(id="btn-back-from-dash", n_clicks=0, style={"display": "none"}),
-            html.Button(id="quali-seg-Q1", n_clicks=0, style={"display": "none"}),
-            html.Button(id="quali-seg-Q2", n_clicks=0, style={"display": "none"}),
-            html.Button(id="quali-seg-Q3", n_clicks=0, style={"display": "none"}),
-            html.Div(id="quali-timeline-chart", style={"display": "none"}),
-            dcc.Checklist(
-                id="driver-checklist", options=[], value=[], style={"display": "none"}
+            *hidden_callback_placeholders(
+                include_nav=False, include_driver_checklist=True
             ),
             html.Div("🏎", style={"fontSize": "48px"}),
             html.Div(

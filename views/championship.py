@@ -1,25 +1,14 @@
 from dash import html, dcc
 import pages.championship as pg_championship
 from components.shared import BG2, GRID, TEXT, FONT
+from components.ui.hidden_ids import hidden_callback_placeholders
 
 
 def championship_view():
     return html.Div(
         style={"background": "#08090d", "minHeight": "100vh", "fontFamily": FONT},
         children=[
-            # Hidden nav buttons
-            html.Button(id="btn-go-telemetry", n_clicks=0, style={"display": "none"}),
-            html.Button(
-                id="btn-go-championship", n_clicks=0, style={"display": "none"}
-            ),
-            html.Button(
-                id="btn-back-from-champ", n_clicks=0, style={"display": "none"}
-            ),
-            html.Button(id="btn-back-from-dash", n_clicks=0, style={"display": "none"}),
-            html.Button(id="quali-seg-Q1", n_clicks=0, style={"display": "none"}),
-            html.Button(id="quali-seg-Q2", n_clicks=0, style={"display": "none"}),
-            html.Button(id="quali-seg-Q3", n_clicks=0, style={"display": "none"}),
-            html.Div(id="quali-timeline-chart", style={"display": "none"}),
+            *hidden_callback_placeholders(),
             html.Div(
                 style={
                     "height": "3px",

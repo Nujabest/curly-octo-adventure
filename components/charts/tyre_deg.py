@@ -1,12 +1,7 @@
-"""
-components/charts/tyre_deg.py
-Tyre degradation bar chart + lap time box plot.
-Improved: bigger bars, better axis labels, cleaner box plots.
-"""
-
 import plotly.graph_objects as go
 import pandas as pd
 from components.shared import TYRE_COLORS, FONT, hex_to_rgba
+from components.ui.plot_theme import base_layout, axis_style
 
 _PLOT_BG = "#0a0c11"
 _PAPER = "#0d0f14"
@@ -49,44 +44,9 @@ def deg_rate_bar(stints_df: pd.DataFrame) -> go.Figure:
     fig.add_hline(y=0, line=dict(color="#2a2d35", width=1.5))
 
     fig.update_layout(
-        paper_bgcolor=_PAPER,
-        plot_bgcolor=_PLOT_BG,
-        font=dict(color="#888", family=FONT, size=10),
-        height=400,
-        margin=dict(l=58, r=24, t=28, b=72),
-        bargap=0.35,
-        legend=dict(
-            bgcolor="rgba(13,15,20,0.92)",
-            bordercolor="#1a1d24",
-            borderwidth=1,
-            font=dict(size=11, color="#ccc"),
-            orientation="h",
-            x=0,
-            y=1.06,
-        ),
-        xaxis=dict(
-            gridcolor=_GRID,
-            zeroline=False,
-            tickfont=dict(size=10, color="#777"),
-            tickangle=-30,
-            showline=True,
-            linecolor="#1a1d24",
-        ),
-        yaxis=dict(
-            gridcolor=_GRID,
-            zeroline=False,
-            tickfont=dict(size=10, color="#777"),
-            title=dict(
-                text="s / lap  (+ = degrading)", font=dict(size=10, color="#666")
-            ),
-            showline=True,
-            linecolor="#1a1d24",
-        ),
-        hoverlabel=dict(
-            bgcolor="#13161e",
-            bordercolor="#252830",
-            font=dict(color="#e0e0e0", size=11),
-        ),
+        **base_layout(height=400, margin={"l": 58, "r": 24, "t": 28, "b": 72}),
+        xaxis={**axis_style(None), "tickangle": -30},
+        yaxis=axis_style("s / lap  (+ = degrading)"),
     )
     return fig
 
@@ -127,41 +87,9 @@ def laptime_boxplot(clean_laps_df: pd.DataFrame, drivers: list) -> go.Figure:
             )
 
     fig.update_layout(
-        paper_bgcolor=_PAPER,
-        plot_bgcolor=_PLOT_BG,
-        font=dict(color="#888", family=FONT, size=10),
-        height=420,
-        margin=dict(l=58, r=24, t=28, b=80),
+        **base_layout(height=420, margin={"l": 58, "r": 24, "t": 28, "b": 80}),
         hovermode="closest",
-        legend=dict(
-            bgcolor="rgba(13,15,20,0.92)",
-            bordercolor="#1a1d24",
-            borderwidth=1,
-            font=dict(size=11, color="#ccc"),
-            orientation="h",
-            x=0,
-            y=1.06,
-        ),
-        xaxis=dict(
-            gridcolor=_GRID,
-            zeroline=False,
-            tickfont=dict(size=10, color="#777"),
-            tickangle=-35,
-            showline=True,
-            linecolor="#1a1d24",
-        ),
-        yaxis=dict(
-            gridcolor=_GRID,
-            zeroline=False,
-            tickfont=dict(size=10, color="#777"),
-            title=dict(text="Lap time (s)", font=dict(size=10, color="#666")),
-            showline=True,
-            linecolor="#1a1d24",
-        ),
-        hoverlabel=dict(
-            bgcolor="#13161e",
-            bordercolor="#252830",
-            font=dict(color="#e0e0e0", size=11),
-        ),
+        xaxis={**axis_style(None), "tickangle": -35},
+        yaxis=axis_style("Lap time (s)"),
     )
     return fig

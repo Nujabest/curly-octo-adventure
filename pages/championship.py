@@ -14,6 +14,7 @@ from components.shared import (
     AVAILABLE_YEARS,
     team_logo_img,
 )
+from components.ui.primitives import section_title, table_th, table_td
 
 JOLPICA_BASE = "https://api.jolpi.ca/ergast/f1"
 
@@ -149,69 +150,6 @@ def fetch_race_results(year: int) -> dict:
 # UI
 
 
-def _section(title):
-    return html.Div(
-        style={
-            "display": "flex",
-            "alignItems": "center",
-            "gap": "8px",
-            "marginBottom": "16px",
-            "paddingBottom": "10px",
-            "borderBottom": f"1px solid {GRID}",
-        },
-        children=[
-            html.Div(
-                style={
-                    "width": "3px",
-                    "height": "18px",
-                    "background": ACCENT,
-                    "borderRadius": "2px",
-                    "flexShrink": "0",
-                }
-            ),
-            html.Div(
-                title,
-                style={
-                    "fontSize": "11px",
-                    "fontWeight": "700",
-                    "letterSpacing": "2.5px",
-                    "color": TEXT,
-                },
-            ),
-        ],
-    )
-
-
-def _th(text):
-    return html.Th(
-        text,
-        style={
-            "fontSize": "9px",
-            "fontWeight": "700",
-            "letterSpacing": "1.8px",
-            "color": "#444",
-            "padding": "8px 12px",
-            "textAlign": "left",
-            "borderBottom": f"1px solid {GRID}",
-            "textTransform": "uppercase",
-            "whiteSpace": "nowrap",
-        },
-    )
-
-
-def _td(content, bold=False, color=None):
-    return html.Td(
-        content,
-        style={
-            "padding": "10px 12px",
-            "fontSize": "12px",
-            "color": color or TEXT,
-            "borderBottom": f"1px solid {BG3}",
-            "fontWeight": "700" if bold else "400",
-        },
-    )
-
-
 def _pos_badge(pos):
     colors = {1: "#ffd700", 2: "#c0c0c0", 3: "#cd7f32"}
     bg = colors.get(pos, BG3)
@@ -266,9 +204,9 @@ def _driver_standings_table(rows: list) -> html.Div:
                         ),
                         style={"padding": "10px 12px"},
                     ),
-                    _td(r["team"], color="#888"),
-                    _td(str(int(r["points"])), bold=True),
-                    _td(str(r["wins"]) if r["wins"] else "–", color="#888"),
+                    table_td(r["team"], color="#888"),
+                    table_td(str(int(r["points"])), bold=True),
+                    table_td(str(r["wins"]) if r["wins"] else "–", color="#888"),
                 ],
             )
         )
@@ -277,7 +215,7 @@ def _driver_standings_table(rows: list) -> html.Div:
         style={"width": "100%", "borderCollapse": "collapse"},
         children=[
             html.Thead(
-                html.Tr([_th(h) for h in ["POS", "DRIVER", "TEAM", "PTS", "WINS"]])
+                html.Tr([table_th(h) for h in ["POS", "DRIVER", "TEAM", "PTS", "WINS"]])
             ),
             html.Tbody(table_rows),
         ],
@@ -304,8 +242,8 @@ def _constructor_standings_table(rows: list) -> html.Div:
                             "color": TEXT,
                         },
                     ),
-                    _td(str(int(r["points"])), bold=True),
-                    _td(str(r["wins"]) if r["wins"] else "–", color="#888"),
+                    table_td(str(int(r["points"])), bold=True),
+                    table_td(str(r["wins"]) if r["wins"] else "–", color="#888"),
                 ],
             )
         )
@@ -313,7 +251,7 @@ def _constructor_standings_table(rows: list) -> html.Div:
     return html.Table(
         style={"width": "100%", "borderCollapse": "collapse"},
         children=[
-            html.Thead(html.Tr([_th(h) for h in ["POS", "TEAM", "PTS", "WINS"]])),
+            html.Thead(html.Tr([table_th(h) for h in ["POS", "TEAM", "PTS", "WINS"]])),
             html.Tbody(table_rows),
         ],
     )
@@ -486,7 +424,10 @@ def _calendar_table(
         children=[
             html.Thead(
                 html.Tr(
-                    [_th(h) for h in ["ROUND", "RACE", "COUNTRY", "DATE", "RESULTS"]]
+                    [
+                        table_th(h)
+                        for h in ["ROUND", "RACE", "COUNTRY", "DATE", "RESULTS"]
+                    ]
                 )
             ),
             html.Tbody(rows),
@@ -533,7 +474,7 @@ def render(year):
                     "boxShadow": "0 2px 12px rgba(0,0,0,0.3)",
                 },
                 children=[
-                    _section("DRIVERS CHAMPIONSHIP"),
+                    section_title("DRIVERS CHAMPIONSHIP"),
                     (
                         _driver_standings_table(driver_rows)
                         if driver_rows
@@ -553,7 +494,7 @@ def render(year):
                     "boxShadow": "0 2px 12px rgba(0,0,0,0.3)",
                 },
                 children=[
-                    _section("CONSTRUCTORS CHAMPIONSHIP"),
+                    section_title("CONSTRUCTORS CHAMPIONSHIP"),
                     (
                         _constructor_standings_table(constructor_rows)
                         if constructor_rows
@@ -577,7 +518,7 @@ def render(year):
             "boxShadow": "0 2px 12px rgba(0,0,0,0.3)",
         },
         children=[
-            _section("RACE CALENDAR"),
+            section_title("RACE CALENDAR"),
             (
                 _calendar_table(calendar, race_results)
                 if calendar

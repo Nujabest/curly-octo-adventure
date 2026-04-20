@@ -7,6 +7,7 @@ from components.shared import (
     chart_theme,
     axis_label,
 )
+from components.ui.plot_theme import base_layout, axis_style
 
 # Data preparation
 
@@ -100,42 +101,10 @@ def timeline(pit_df: pd.DataFrame) -> go.Figure:
         )
 
     fig.update_layout(
-        paper_bgcolor="#0d0f14",
-        plot_bgcolor="#0a0c11",
-        font=dict(color="#888", size=10),
-        height=400,
-        margin=dict(l=56, r=28, t=24, b=52),
+        **base_layout(height=400, margin={"l": 56, "r": 28, "t": 24, "b": 52}),
         hovermode="closest",
-        hoverlabel=dict(
-            bgcolor="#13161e",
-            bordercolor="#252830",
-            font=dict(color="#e0e0e0", size=11),
-        ),
-        legend=dict(
-            bgcolor="rgba(13,15,20,0.9)",
-            bordercolor="#1a1d24",
-            borderwidth=1,
-            font=dict(size=11, color="#ccc"),
-            orientation="h",
-            x=0,
-            y=1.06,
-        ),
-        xaxis=dict(
-            gridcolor="#161920",
-            zeroline=False,
-            tickfont=dict(size=10, color="#777"),
-            title=dict(text="Lap Number", font=dict(size=10, color="#666")),
-            showline=True,
-            linecolor="#1a1d24",
-        ),
-        yaxis=dict(
-            gridcolor="#161920",
-            zeroline=False,
-            tickfont=dict(size=10, color="#777"),
-            title=dict(text="Duration (s)", font=dict(size=10, color="#666")),
-            showline=True,
-            linecolor="#1a1d24",
-        ),
+        xaxis=axis_style("Lap Number"),
+        yaxis=axis_style("Duration (s)"),
     )
     return fig
 
@@ -176,32 +145,10 @@ def avg_duration(pit_df: pd.DataFrame) -> go.Figure:
     )
 
     fig.update_layout(
-        paper_bgcolor="#0d0f14",
-        plot_bgcolor="#0a0c11",
-        font=dict(color="#888", size=10),
-        height=360,
-        margin=dict(l=130, r=70, t=16, b=44),
+        **base_layout(height=360, margin={"l": 130, "r": 70, "t": 16, "b": 44}),
         hovermode="closest",
-        hoverlabel=dict(
-            bgcolor="#13161e",
-            bordercolor="#252830",
-            font=dict(color="#e0e0e0", size=11),
-        ),
-        xaxis=dict(
-            gridcolor="#161920",
-            zeroline=False,
-            tickfont=dict(size=10, color="#777"),
-            title=dict(text="Seconds", font=dict(size=10, color="#666")),
-            showline=True,
-            linecolor="#1a1d24",
-        ),
-        yaxis=dict(
-            gridcolor="#161920",
-            zeroline=False,
-            tickfont=dict(size=11, color="#ccc"),
-            showline=True,
-            linecolor="#1a1d24",
-        ),
+        xaxis=axis_style("Seconds"),
+        yaxis=axis_style(None, tick_size=11, tick_color="#ccc"),
     )
     return fig
 
@@ -239,43 +186,12 @@ def stop_comparison(pit_df: pd.DataFrame) -> go.Figure:
         )
 
     fig.update_layout(
-        paper_bgcolor="#0d0f14",
-        plot_bgcolor="#0a0c11",
-        font=dict(color="#888", size=10),
-        height=380,
-        margin=dict(l=56, r=28, t=28, b=48),
+        **base_layout(height=380, margin={"l": 56, "r": 28, "t": 28, "b": 48}),
         barmode="group",
         bargap=0.25,
         bargroupgap=0.08,
-        hoverlabel=dict(
-            bgcolor="#13161e",
-            bordercolor="#252830",
-            font=dict(color="#e0e0e0", size=11),
-        ),
-        legend=dict(
-            bgcolor="rgba(13,15,20,0.9)",
-            bordercolor="#1a1d24",
-            borderwidth=1,
-            font=dict(size=11, color="#ccc"),
-            orientation="h",
-            x=0,
-            y=1.06,
-        ),
-        xaxis=dict(
-            gridcolor="#161920",
-            zeroline=False,
-            tickfont=dict(size=11, color="#ccc"),
-            showline=True,
-            linecolor="#1a1d24",
-        ),
-        yaxis=dict(
-            gridcolor="#161920",
-            zeroline=False,
-            tickfont=dict(size=10, color="#777"),
-            title=dict(text="Duration (s)", font=dict(size=10, color="#666")),
-            showline=True,
-            linecolor="#1a1d24",
-        ),
+        xaxis=axis_style(None, tick_size=11, tick_color="#ccc"),
+        yaxis=axis_style("Duration (s)"),
     )
     return fig
 

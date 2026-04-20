@@ -1,11 +1,8 @@
-"""
-components/charts/telemetry.py
-Improved: thicker lines, filled throttle/brake areas, better axis labels.
-"""
-
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from components.shared import BG2, GRID, TEXT, FONT, hex_to_rgba
+from components.shared import FONT, hex_to_rgba
+from components.ui.plot_theme import base_layout
+from components.ui.plot_theme import base_layout, axis_style
 
 _PLOT_BG = "#0a0c11"
 
@@ -148,24 +145,9 @@ def build(driver_telemetry: dict) -> go.Figure:
         ann.update(font=dict(size=9, color="#555", family=FONT), x=0.01, xanchor="left")
 
     fig.update_layout(
-        paper_bgcolor=BG2,
-        plot_bgcolor=_PLOT_BG,
-        font=dict(color="#888", family=FONT, size=10),
-        height=640,
-        margin=dict(l=60, r=28, t=40, b=52),
+        **base_layout(
+            height=640, margin={"l": 60, "r": 28, "t": 40, "b": 52}, legend_y=1.02
+        ),
         hovermode="x unified",
-        hoverlabel=dict(
-            bgcolor="#13161e", bordercolor="#252830", font=dict(color=TEXT, size=11)
-        ),
-        legend=dict(
-            bgcolor="rgba(13,15,20,0.92)",
-            bordercolor="#1a1d24",
-            borderwidth=1,
-            font=dict(size=11, color="#ccc"),
-            orientation="h",
-            x=0,
-            y=1.02,
-            itemsizing="constant",
-        ),
     )
     return fig

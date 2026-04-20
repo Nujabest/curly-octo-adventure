@@ -14,6 +14,7 @@ from components.shared import (
     FONT,
     team_logo_img,
 )
+from components.ui.primitives import section_title, table_th, position_badge
 
 # Usefull
 
@@ -49,23 +50,6 @@ def parse_segment(results, segment):
 # UI
 
 
-def _th(text):
-    return html.Th(
-        text,
-        style={
-            "fontSize": "9px",
-            "fontWeight": "700",
-            "letterSpacing": "1.8px",
-            "color": "#444",
-            "padding": "8px 12px",
-            "textAlign": "left",
-            "borderBottom": f"1px solid {GRID}",
-            "textTransform": "uppercase",
-            "whiteSpace": "nowrap",
-        },
-    )
-
-
 def _td(content, bold=False, color=None, size="12px"):
     return html.Td(
         content,
@@ -75,37 +59,6 @@ def _td(content, bold=False, color=None, size="12px"):
             "color": color or TEXT,
             "borderBottom": f"1px solid {BG3}",
             "fontWeight": "700" if bold else "400",
-        },
-    )
-
-
-def _pos_badge(pos, elim=False):
-    colors = {1: "#ffd700", 2: "#c0c0c0", 3: "#cd7f32"}
-    if elim:
-        bg, tc = "#1a0508", ACCENT
-    elif pos in colors:
-        bg, tc = colors[pos], "#000"
-    else:
-        bg, tc = BG3, TEXT
-    border = (
-        f"1px solid {ACCENT}"
-        if elim
-        else ("none" if pos in colors else f"1px solid {GRID}")
-    )
-    return html.Div(
-        str(pos),
-        style={
-            "width": "28px",
-            "height": "28px",
-            "borderRadius": "5px",
-            "background": bg,
-            "color": tc,
-            "fontWeight": "700",
-            "fontSize": "12px",
-            "display": "flex",
-            "border": border,
-            "alignItems": "center",
-            "justifyContent": "center",
         },
     )
 
@@ -152,7 +105,7 @@ def _segment_table(rows, advance_count=None):
                 },
                 children=[
                     html.Td(
-                        _pos_badge(pos, elim),
+                        position_badge(pos, elim),
                         style={"padding": "7px 8px", "width": "32px"},
                     ),
                     html.Td(_driver_cell(r), style={"padding": "7px 8px"}),
@@ -207,7 +160,7 @@ def _segment_table(rows, advance_count=None):
         style={"width": "100%", "borderCollapse": "collapse"},
         children=[
             html.Thead(
-                html.Tr([_th(h) for h in ["P", "DRIVER", "TEAM", "TIME", "GAP"]])
+                html.Tr([table_th(h) for h in ["P", "DRIVER", "TEAM", "TIME", "GAP"]])
             ),
             html.Tbody(table_rows),
         ],
@@ -215,36 +168,7 @@ def _segment_table(rows, advance_count=None):
 
 
 def _seg_header(title, color=ACCENT):
-    return html.Div(
-        style={
-            "display": "flex",
-            "alignItems": "center",
-            "gap": "7px",
-            "marginBottom": "12px",
-            "paddingBottom": "8px",
-            "borderBottom": f"1px solid {GRID}",
-        },
-        children=[
-            html.Div(
-                style={
-                    "width": "3px",
-                    "height": "18px",
-                    "background": color,
-                    "borderRadius": "2px",
-                    "flexShrink": "0",
-                }
-            ),
-            html.Div(
-                title,
-                style={
-                    "fontSize": "11px",
-                    "fontWeight": "700",
-                    "letterSpacing": "2px",
-                    "color": color,
-                },
-            ),
-        ],
-    )
+    return section_title(title, accent=color, margin_bottom="12px")
 
 
 # Timeline chart
