@@ -77,7 +77,7 @@ This dashboard was built to bridge that gap. It provides an interactive environm
 
 ---
 
-## Running Locally
+## Running Locally (Windows)
 
 
 
@@ -94,7 +94,8 @@ cd F1_telemetrydashboard
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\.venv\Scripts\Activate.ps1
 ```
 
 ### 3. Install dependencies (Python 3.11.x required)
